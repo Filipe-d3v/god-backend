@@ -46,16 +46,7 @@ module.exports = class ProjectController {
       desc: desc,
       value: value,
       projectSkills: parsedProjectSkills,
-      owner: {
-        _id: currentUser._id,
-        name: currentUser.name,
-        username: currentUser.username,
-        xp: currentUser.xp,
-        surname: currentUser.surname,
-        email: currentUser.email,
-        image: currentUser.image,
-        phone: currentUser.phone,
-      },
+      owner: currentUser
     });
   
     try {
@@ -113,30 +104,56 @@ module.exports = class ProjectController {
   }
 
   static async getAllUserProjects(req, res) {
-
-    var user
-    const token = getToken(req)
-    const decoded = jwt.verify(token, 'secret')
-
-    user = await User.findById(decoded.id)
-
-    const projects = await Project.find({ 'owner._id': user._id }).populate('projectSkills').sort('-createdAt')
-
-    res.status(200).json({ projects })
+    try {
+      const token = getToken(req);
+      const decoded = jwt.verify(token, 'secret');
+  
+      const user = await User.findById(decoded.id);
+      if (!user) {
+        return res.status(404).json({ message: 'Usuário não encontrado' });
+      }
+  
+      const projects = await Project.find({ owner: user._id })
+        .populate('projectSkills')
+        .populate({
+          path: 'owner',
+          select: 'name image value'
+        })
+        .sort('-createdAt');
+  
+      res.status(200).json({ projects });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
   }
+  
 
   static async getProjectById(req, res) {
-    const id = req.params.id
-
-    const project = await Project.findById(id).populate('projectSkills')
-
-    if (!project) {
-      res.status(400).json({ message: 'Projeto não encontrado!' })
-      return
+    try {
+      const id = req.params.id;
+  
+      // Verifica se o ID fornecido é válido
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ message: 'ID de projeto inválido!' });
+      }
+  
+      const project = await Project.findById(id)
+        .populate('projectSkills')
+        .populate({
+          path: 'owner',
+          select: 'name surname xp username email image'
+        });
+  
+      if (!project) {
+        return res.status(404).json({ message: 'Projeto não encontrado!' });
+      }
+  
+      res.status(200).json({ project });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
     }
-
-    res.status(200).json({ project })
   }
+  
 
   static async delete(req, res) {
     const projectId = req.params;

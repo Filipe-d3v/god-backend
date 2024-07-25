@@ -37,7 +37,11 @@ const Project = mongoose.model(
             type: Array,
             required: false,
         }],
-        owner: Object
+        owner: {
+            type: Schema.Types.ObjectId,
+            ref: 'User',
+            required: true
+        }
     },
     {timestamps: true},
 ));
