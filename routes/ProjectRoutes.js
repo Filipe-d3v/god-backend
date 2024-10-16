@@ -13,6 +13,7 @@ router.get('/getbyid/:id', verifyToken, projectController.getProjectById);
 router.patch('/update/:id', verifyToken, uploadImage.single('image'), projectController.update);
 router.patch('/addimages/:id', verifyToken, uploadImage.array('images'), projectController.addImages);
 router.delete('/delete/:id', verifyToken, ProjectController.delete);
+router.get('/top10', verifyToken, projectController.getTop10);
 
 
 

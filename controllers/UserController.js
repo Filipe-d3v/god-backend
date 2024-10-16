@@ -5,14 +5,13 @@ const jwt = require('jsonwebtoken')
 
 const createUserToken = require('../helpers/create-users-tokens')
 const getToken = require('../helpers/get-token')
-const getUserByToken = require('../helpers/get-user-by-token')
 
 module.exports = class UserController {
     static async create(req, res) {
-        const {username, name, surname, email, gender, description,
-            birth, password, confirm_pass, github, linkedin } = req.body
+        const { username, name, surname, email, stack,
+            password, confirm_pass } = req.body
 
-            const image = '';
+        const image = '';
 
         if (!name) {
             res.status(400).json({ message: 'Informe o nome!' })
@@ -24,6 +23,10 @@ module.exports = class UserController {
         }
         if (!email) {
             res.status(400).json({ message: 'Informe o e-mail!' })
+            return
+        }
+        if (!stack) {
+            res.status(422).json({ message: 'Porfavor, informe sua principal stack' })
             return
         }
 
@@ -55,12 +58,8 @@ module.exports = class UserController {
             username: username,
             surname: surname,
             email: email,
-            birth: birth,
-            description: description,
-            gender: gender,
+            stack: stack,
             password: passHash,
-            github: github,
-            linkedin: linkedin,
             image: image,
         })
 
@@ -109,7 +108,7 @@ module.exports = class UserController {
             const decoded = jwt.verify(token, 'secret')
 
             currentUser = await User.findById(decoded.id)
-            currentUser.password = undefined
+            currentUser.password = '';
         } else {
             currentUser = null
         }
@@ -133,65 +132,66 @@ module.exports = class UserController {
 
     static async update(req, res) {
         const id = req.params.id;
-    
+
         const token = getToken(req);
         const decoded = jwt.verify(token, 'secret');
-    
+
         const user = await User.findById(decoded.id);
-    
+
         if (!user) {
             res.status(404).json({ message: 'Usuário não encontrado!' });
             return;
         }
-    
-        const { username, name, surname, email, gender, description, birth, password, confirm_pass, github, linkedin } = req.body;
-    
+
+        const { username, name, surname, email, gender, stack, birth, password, confirm_pass, github, linkedin, instagram } = req.body;
+
         user.password = undefined;
-    
+
         if (req.file) {
             user.image = req.file.filename;
         }
         user.name = name;
         user.surname = surname;
-        
+
         const userExists = await User.findOne({ email: email });
-    
+
         if (user.email !== email && userExists) {
             res.status(422).json({ message: 'Este e-mail já está em uso!' });
             return;
         }
-    
+
         user.email = email;
         user.birth = birth;
         user.gender = gender;
         user.github = github;
         user.linkedin = linkedin;
         user.username = username;
-        user.description = description;
-    
+        user.stack = stack;
+        user.instagram = instagram;
+
         if (password !== confirm_pass) {
             res.status(422).json({ message: 'As senhas não são iguais!' });
             return;
         } else if (password === confirm_pass && password != null) {
             const salt = await bcrypt.genSalt(12);
             const passHash = await bcrypt.hash(password, salt);
-    
+
             user.password = passHash;
         }
-    
+
         try {
             await User.updateOne(
                 { _id: user._id },
                 { $set: user },
                 { new: true }
             );
-    
+
             res.status(200).json({ message: 'Usuário atualizado!' });
         } catch (err) {
             res.status(500).json({ message: err.message });
         }
     }
-    
+
 
     static async getAll(req, res) {
         const users = await User.find()

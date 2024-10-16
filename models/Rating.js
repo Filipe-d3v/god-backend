@@ -1,19 +1,21 @@
 const mongoose = require('../db/conn');
 const {Schema} = mongoose;
 
-const FeedBack = mongoose.model(
-    'FeedBack',
+const Rating = mongoose.model(
+    'Rating',
     new Schema({
         rating: {
             type: Number,
             required: true
         },
-        date: {
-            type: String
-        },
         project: {
             type: mongoose.Types.ObjectId,
             ref: 'Project',
+            required: true
+        },
+        owner: {
+            type: mongoose.Types.ObjectId,
+            ref: 'User',
             required: true
         },
     },
@@ -21,4 +23,4 @@ const FeedBack = mongoose.model(
     )
 )
 
-module.exports = FeedBack;
+module.exports = Rating;

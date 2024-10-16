@@ -41,7 +41,15 @@ const Project = mongoose.model(
             type: Schema.Types.ObjectId,
             ref: 'User',
             required: true
-        }
+        },
+        platform: {
+            type: String,
+            required: true
+        },
+        score: {
+            type: Number,
+            default: 0
+        },
     },
     {timestamps: true},
 ));

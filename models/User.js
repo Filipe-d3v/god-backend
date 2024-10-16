@@ -33,12 +33,8 @@ const User = mongoose.model(
             type: String,
             required: false
         },
-        description: {
+        stack: {
             type: String,
-            required: false
-        },
-        skills: {
-            type: Array,
             required: false
         },
         password: {
@@ -54,6 +50,15 @@ const User = mongoose.model(
             required: false
         },
         github: {
+            type: String,
+            required: false
+        },
+        verified: {
+            type: Boolean,
+            required: true,
+            default: false
+        }, 
+        instagram: {
             type: String,
             required: false
         },

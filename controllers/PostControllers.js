@@ -1,5 +1,6 @@
 const Post = require('../models/Post');
 const User = require('../models/User');
+const mongoose = require('mongoose');
 
 const getToken = require('../helpers/get-token');
 const jwt = require('jsonwebtoken');
@@ -51,13 +52,24 @@ module.exports = class PostController {
         })
         .populate({
           path: 'owner',
-          select: ['name', 'email', 'image', 'surname', 'username']
+          select: ['name', 'email', 'image', 'surname', 'username', 'verified']
         })
         .sort('-createdAt');
   
       res.status(200).json({ posts });
     } catch (error) {
       res.status(500).json({ message: error.message });
+    }
+  }
+
+  static async delete(req, res) {
+    const postId = req.params;
+    try {
+      const postObjectId = mongoose.Types.ObjectId(postId);
+      await Post.deleteOne({ _id: postObjectId });
+      res.status(200).json({ message: 'Post apagado!' })
+    } catch (error) {
+      res.status(500).json({ message: 'deu ruim' });
     }
   }
 }
