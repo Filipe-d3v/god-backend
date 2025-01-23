@@ -1,5 +1,5 @@
 const multer = require('multer')
-const patch = require('path')
+const path = require('path')
 
 //Destino para imagens
 const fileStorage = multer.diskStorage({
@@ -14,13 +14,13 @@ const fileStorage = multer.diskStorage({
     cb(null, `public/files/${folder}`)
   },
   filename: function (req, file, cb) {
-    cb(null, Date.now() + String(Math.floor(Math.random() * 100)) + patch.extname(file.originalname))
+    cb(null, Date.now() + String(Math.floor(Math.random() * 100)) + path.extname(file.originalname))
   }
 })
 
 const fileUpload = multer({
   storage: fileStorage, fileFilter(req, file, cb) {
-    if (!file.originalname.match(/\.(pdf)$/)) {
+    if (!file.originalname.match(/\.(pdf|PDF)$/)) {
       return cb(new Error('Apenas Arquivos no formato PDF são permitidos!'))
     }
     cb(undefined, true)

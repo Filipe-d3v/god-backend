@@ -15,7 +15,7 @@ const Notification = mongoose.model(
     },
     about: {
       type: mongoose.Types.ObjectId,
-      required: true,
+      required: false,
       ref: 'Project'
     }
   }, {timestamps: true})

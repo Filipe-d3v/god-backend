@@ -12,10 +12,10 @@ const Project = mongoose.model(
             type: String,
             required: false
         },
-        docs: [{
-            type: Schema.Types.ObjectId,
-            required: false,
-        }],
+        docs: {
+            type: String,
+            required: false
+        },
         image: {
             type: String,
             required: false

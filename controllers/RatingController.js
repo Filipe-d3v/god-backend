@@ -6,7 +6,6 @@ const User = require('../models/User');
 module.exports = class RatingController {
   static async create(req, res) {
     const rating = req.body
-    console.log("foi")
 
     const id = req.params.id
     

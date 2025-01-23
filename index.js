@@ -23,6 +23,7 @@ const phoneRoutes = require('./routes/PhoneRoutes');
 const addressRoute = require('./routes/AddressRoutes');
 const notificatioRoutes = require('./routes/NotificationRoutes');
 const assessmentRoutes = require('./routes/AssessmentRoutes');
+const visitRoutes = require('./routes/VisitRoutes');
 
 app.use('/users', userRotes);
 app.use('/skills', skillRotes);
@@ -35,5 +36,6 @@ app.use('/phones', phoneRoutes);
 app.use('/address', addressRoute);
 app.use('/notifications', notificatioRoutes);
 app.use('/ratings', assessmentRoutes);
+app.use('/visits', visitRoutes);
 
 app.listen(5555);

@@ -198,4 +198,13 @@ module.exports = class UserController {
 
         res.status(200).json({ users: users })
     }
+
+    static async getTop10(req, res) {
+        try {
+          const topUsers = await User.find().sort({ xp: -1 }).limit(10);
+          res.status(200).json(topUsers);
+        } catch (error) {
+          res.status(500).json({ message: error.message });
+        }
+      }
 }

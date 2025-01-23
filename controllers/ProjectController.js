@@ -108,7 +108,7 @@ module.exports = class ProjectController {
       const topProjects = await Project.find().sort({ score: -1 }).limit(10);
       res.status(200).json(topProjects);
     } catch (error) {
-      res.status(500).json({message: error.message});
+      res.status(500).json({ message: error.message });
     }
   }
 
@@ -166,19 +166,19 @@ module.exports = class ProjectController {
 
   static async delete(req, res) {
     const projectId = req.params.id; // Ajuste para acessar o id corretamente
-  
+
     try {
       const project = await Project.findById(projectId);
       if (!project) {
         return res.status(404).json({ message: 'Projeto não encontrado' });
       }
-  
+
       // Apagar a imagem principal
       const mainImagePath = path.join(__dirname, '../public/img/projects/', project.image);
       if (fs.existsSync(mainImagePath)) {
         fs.unlinkSync(mainImagePath);
       }
-  
+
 
       if (project.images && Array.isArray(project.images)) {
         const flatImages = project.images.flat(); // Achata o array, se necessário
@@ -189,7 +189,7 @@ module.exports = class ProjectController {
           }
         });
       }
-  
+
       const projectObjectId = mongoose.Types.ObjectId(projectId);
       await Post.deleteMany({ project: projectObjectId });
       await Project.deleteOne({ _id: projectObjectId });
@@ -198,7 +198,7 @@ module.exports = class ProjectController {
       res.status(500).json({ message: error.message });
     }
   }
-  
+
 
 
   static async addImages(req, res) {
@@ -227,4 +227,27 @@ module.exports = class ProjectController {
     }
   }
 
-} 
+  static async addDocs(req, res) {
+    const id = req.params.id;
+    const docs = req.file.filename;
+    const updatedData ={};
+
+
+    const project = await Project.findOne({ _id: id })
+
+    if (!project) {
+      res.status(404).json({ message: 'Projeto não encontrado!' })
+      return
+    }
+
+    updatedData.docs = docs;
+
+    try {
+      await Project.findByIdAndUpdate(id, updatedData)
+    res.status(200).json({ message: 'Documento adicionado!' });
+    } catch (error) {
+      res.status(500).json({message: error});
+    }
+
+};
+}
